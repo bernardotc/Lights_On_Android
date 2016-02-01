@@ -1,11 +1,12 @@
 package com.example.lab2;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by bdtrev on 19/01/2016.
  */
-public class LightsModel {
+public class LightsModel implements Serializable {
 
     int[][] grid;
     boolean notStrict = true;

@@ -25,9 +25,10 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
 
     static String tag = "LightsView: ";
 
-    LightsModel model;
+    MyActivity parent;
+    //LightsModel model;
     int size;
-    int n;
+    //int n;
 
     public LightsView(Context context) {
         super(context);
@@ -36,7 +37,7 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
 
     public LightsView(Context context, LightsModel model) {
         super(context);
-        this.model = model;
+        //this.model = model;
         setup(context, "Constructor 1a");
     }
 
@@ -52,12 +53,13 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
 
     private void setup(Context context, String cons) {
         System.out.println(tag + cons);
-        checkModel();
+        parent = (MyActivity) context;
+        //checkModel();
         setOnTouchListener(this);
         setOnClickListener(this);
     }
 
-    private void checkModel() {
+    /*private void checkModel() {
         if (model != null) {
             n = model.n;
         } else {
@@ -66,14 +68,14 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
             n = 5;
             model = new LightsModel(n);
         }
-    }
+    }*/
 
     @Override
     public void onClick(View view) {
         // use the x, y coords from the onTouch event, the assume that the geometry params have already been set
         int i = (int) ((curX - xOff) / size);
         int j = (int) ((curY - yOff) / size);
-        model.tryFlip(i, j);
+        parent.getModel().tryFlip(i, j);
         postInvalidate();
     }
 
@@ -91,6 +93,7 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
     int xOff, yOff, minLen, gridSquareLen;
 
     public void setGeometry() {
+        int n = parent.getModel().n;
         int midX = getWidth() / 2;
         int midY = getHeight() / 2;
         minLen = Math.min(getWidth(), getHeight());
@@ -103,6 +106,7 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
     }
 
     public void draw(Canvas g) {
+        int n = parent.getModel().n;
         Paint p = new Paint();
         p.setAntiAlias(true);
         p.setStyle(Paint.Style.FILL);
@@ -118,7 +122,7 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
             for (int j = 0; j < n; j++) {
                 int cx = xOff + size * i + size / 2;
                 int cy = yOff + size * j + size / 2;
-                p.setColor(cols[model.grid[i][j]]);
+                p.setColor(cols[parent.getModel().grid[i][j]]);
                 drawTile(g, cx, cy, p);
             }
         }
@@ -133,4 +137,6 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
         RectF rect = new RectF(x, y, x + length, y + length);
         g.drawRoundRect(rect, rad, rad, p);
     }
+
+
 }
