@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,6 +27,7 @@ public class MyActivity extends Activity {
     static String optionsItem = "Options";
     static String saveFileName = "savedData";
     static String tag = "Options";
+    static TextView scoreText;
     FileOutputStream fileOutputStream;
     FileInputStream fileInputStream;
     ObjectOutputStream objectOutputStream;
@@ -40,6 +42,7 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         //setContentView(new LightsView(this, new LightsModel(n)));
         setContentView(R.layout.main);
+        scoreText = (TextView) findViewById(R.id.score);
         System.out.println("Create");
     }
 
@@ -88,6 +91,7 @@ public class MyActivity extends Activity {
             fileInputStream = openFileInput(saveFileName);
             objectInputStream = new ObjectInputStream(fileInputStream);
             model = (LightsModel) objectInputStream.readObject();
+            scoreText.setText("Score = " + model.getScore());
             objectInputStream.close();
             fileInputStream.close();
         } catch (Exception e) {
@@ -126,6 +130,7 @@ public class MyActivity extends Activity {
     public void resetModel(View view) {
         LightsView lightsView = (LightsView) findViewById(R.id.lightsView);
         //lightsView.reset();
+        scoreText.setText("Score = 0");
         model.reset(n);
         lightsView.invalidate();
     }
@@ -150,6 +155,8 @@ public class MyActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    static String gridMessage = "Choose n x n grid size";
+
     public class CustomDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -162,7 +169,7 @@ public class MyActivity extends Activity {
             picker.setMinValue(nGridMin);
             picker.setValue(n);
             builder.setView(picker);
-            builder.setMessage("Choose n x n grid size");
+            builder.setMessage(gridMessage);
             builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     n = picker.getValue();
@@ -184,12 +191,15 @@ public class MyActivity extends Activity {
         }
     }
 
+    static String title = "I see you're trying to leave.";
+    static String message = "Are you sure?";
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle("I see you're trying to leave.");
-            alertDialog.setMessage("Are you sure?");
+            alertDialog.setTitle(title);
+            alertDialog.setMessage(message);
 
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
                     "Yes", new DialogInterface.OnClickListener()

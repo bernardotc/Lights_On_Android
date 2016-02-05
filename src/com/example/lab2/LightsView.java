@@ -24,6 +24,8 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
     static int[] cols = {fgOff, fgOn};
 
     static String tag = "LightsView: ";
+    static String win = "You win!";
+    static String score = "Score = ";
 
     MyActivity parent;
     //LightsModel model;
@@ -76,6 +78,14 @@ public class LightsView extends View implements View.OnClickListener, View.OnTou
         int i = (int) ((curX - xOff) / size);
         int j = (int) ((curY - yOff) / size);
         parent.getModel().tryFlip(i, j);
+
+        TextView scoreText = (TextView) parent.findViewById(R.id.score);
+        if (parent.getModel().isSolved() == parent.getModel().n * parent.getModel().n) {
+            scoreText.setText(win);
+        } else {
+            scoreText.setText(score + (parent.getModel().getScore()));
+        }
+
         postInvalidate();
     }
 
