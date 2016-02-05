@@ -78,7 +78,8 @@ public class LightsModel implements Serializable {
         return isSolved();
     }
 
-    public void reset() {
-        grid = new int[n][n];
+    public void reset(int n) {
+        this.n = n;
+        grid = new int[this.n][this.n];
     }
 }

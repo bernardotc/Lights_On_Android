@@ -2,14 +2,14 @@ package com.example.lab2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
+import android.widget.NumberPicker;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,9 +19,13 @@ import java.io.ObjectOutputStream;
 public class MyActivity extends Activity {
     // declare size of nxn puzzle
     static int n = 3;
+    static int nGridMax = 10;
+    static int nGridMin = 2;
     static String modelKey = "Model";
     static String aboutItem = "About";
+    static String optionsItem = "Options";
     static String saveFileName = "savedData";
+    static String tag = "Options";
     FileOutputStream fileOutputStream;
     FileInputStream fileInputStream;
     ObjectOutputStream objectOutputStream;
@@ -122,13 +126,14 @@ public class MyActivity extends Activity {
     public void resetModel(View view) {
         LightsView lightsView = (LightsView) findViewById(R.id.lightsView);
         //lightsView.reset();
-        model.reset();
+        model.reset(n);
         lightsView.invalidate();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(aboutItem);
+        menu.add(optionsItem);
         return true;
     }
 
@@ -138,8 +143,45 @@ public class MyActivity extends Activity {
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
             return true;
+        } else if (item.getTitle().equals(optionsItem)) {
+            CustomDialogFragment dialog = new CustomDialogFragment();
+            dialog.show(getFragmentManager(), tag);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public class CustomDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            // declare picker final so it can be referred in anon. Inner classes
+            // used for event handling below
+            final NumberPicker picker = new NumberPicker(getBaseContext());
+            picker.setMaxValue(nGridMax);
+            picker.setMinValue(nGridMin);
+            picker.setValue(n);
+            builder.setView(picker);
+            builder.setMessage("Choose n x n grid size");
+            builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    n = picker.getValue();
+                    resetModel(null);
+                    System.out.println(tag + " New n value: " + n);
+                }
+            });
+            builder.setNegativeButton("Continue", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // still update the n value, but don't restart the game
+                    n = picker.getValue();
+                    System.out.println(tag + " Cancelled n value: " + n);
+                }
+            });
+            // Create the AlertDialog object and return it
+            AlertDialog dialog = builder.create();
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            return dialog;
+        }
     }
 
     @Override
